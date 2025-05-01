@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر الإكسسوارات - عرض المنتجات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8e44ad;
+            --secondary-color: #9b59b6;
+            --accent-color: #e74c3c;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --text-color: #2c3e50;
+            --border-radius: 10px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .contact-info {
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 20px auto;
+            max-width: 500px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .contact-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .contact-info i {
+            margin-left: 8px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-image {
+            height: 200px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .product-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-details {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1rem;
+            margin-left: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn i {
+            margin-left: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>متجر الإكسسوارات والعناية بالبشرة</h1>
+            <p>أجود المنتجات بأفضل الأسعار</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="contact-info">
+            <h3>للطلب والاستفسار</h3>
+            <a href="tel:0660003832">
+                <i class="fas fa-phone"></i> 0660003832
+            </a>
+        </div>
+
+        <div class="products-grid">
+            <!-- المنتج 1 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <span class="product-badge">الأكثر مبيعاً</span>
+                    <img src="https://via.placeholder.com/300x200?text=بينار+جرائري" alt="بينار جرائري">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">بينار جرائري</h3>
+                    <p class="product-description">لون طبيعي - حماية طويلة الأمد - مناسب لجميع أنواع البشرة</p>
+                    <div class="product-price">
+                        <div>
+                            <span class="price">3,500.00 دينار</span>
+                            <span class="old-price">4,000.00 دينار</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="far fa-heart"></i> المفضلة
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> أضف للسلة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المنتج 2 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/300x200?text=حمل+نور" alt="حمل نور">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">حمل نور</h3>
+                    <p class="product-description">تفتيح طبيعي - نتائج مرئية خلال أسبوعين</p>
+                    <div class="product-price">
+                        <span class="price">3,500.00 دينار</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="far fa-heart"></i> المفضلة
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> أضف للسلة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المنتج 3 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <span class="product-badge">جديد</span>
+                    <img src="https://via.placeholder.com/300x200?text=مصاحبني+ماسكار+ماتين" alt="مصاحبني ماسكار ماتين">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">مصاحبني ماسكار ماتين</h3>
+                    <p class="product-description">الزم وقت قصر 95% - مقاوم للماء - تطويل واضح للرموش</p>
+                    <div class="product-price">
+                        <span class="price">4,200.00 دينار</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="far fa-heart"></i> المفضلة
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> أضف للسلة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المنتج 4 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/300x200?text=إغلاقي+حماية" alt="إغلاقي حماية">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">إغلاقي حماية</h3>
+                    <p class="product-description">حماية حبيش الأدة - تثبيت طويل الأمد - بدون ضرر للشعر</p>
+                    <div class="product-price">
+                        <div>
+                            <span class="price">3,000.00 دينار</span>
+                            <span class="old-price">3,900.00 دينار</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="far fa-heart"></i> المفضلة
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> أضف للسلة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المنتج 5 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/300x200?text=خمار+نور" alt="خمار نور">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">خمار نور</h3>
+                    <p class="product-description">خفة ورفاهية - ألوان متنوعة - جودة عالية</p>
+                    <div class="product-price">
+                        <span class="price">3,500.00 دينار</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="far fa-heart"></i> المفضلة
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> أضف للسلة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المنتج 6 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <span class="product-badge">عرض خاص</span>
+                    <img src="https://via.placeholder.com/300x200?text=تطوير+الرموش" alt="تطوير الرموش">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">تطوير الرموش والخاص</h3>
+                    <p class="product-description">تكثيف وتطويل - ترطيب دائم - نتائج فورية</p>
+                    <div class="product-price">
+                        <span class="price">2,000.00 دينار</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="far fa-heart"></i> المفضلة
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> أضف للسلة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 متجر الإكسسوارات والعناية بالبشرة. جميع الحقوق محفوظة.</p>
+            <div class="social-links" style="margin-top: 15px;">
+                <a href="#" style="color: #3b5998; margin: 0 10px;"><i class="fab fa-facebook-f fa-lg"></i></a>
+                <a href="#" style="color: #1da1f2; margin: 0 10px;"><i class="fab fa-twitter fa-lg"></i></a>
+                <a href="#" style="color: #e1306c; margin: 0 10px;"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" style="color: #25d366; margin: 0 10px;"><i class="fab fa-whatsapp fa-lg"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // يمكنك إضافة أي وظائف JavaScript هنا
+        document.addEventListener('DOMContentLoaded', function() {
+            // إضافة تأثير عند النقر على أزرار الإضافة للسلة
+            const addToCartButtons = document.querySelectorAll('.btn-primary');
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
+                    this.style.backgroundColor = '#2ecc71';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-shopping-cart"></i> أضف للسلة';
+                        this.style.backgroundColor = '';
+                    }, 2000);
+                });
+            });
+
+            // إضافة تأثير للمفضلة
+            const favoriteButtons = document.querySelectorAll('.btn-secondary');
+            favoriteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        this.style.color = '#e74c3c';
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        this.style.color = '';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
