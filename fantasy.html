@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدوري الجزائري - Fantasy League</title>
+    <style>
+        :root {
+            --primary-color: #006633; /* لون رئيسي جزائري */
+            --secondary-color: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #00A859);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        nav button {
+            flex: 1;
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            color: white;
+            font-size: 16px;
+        }
+
+        nav button:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        nav button.active {
+            background-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeEffect 1s;
+        }
+
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        .team-card {
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-logo {
+            width: 50px;
+            height: 50px;
+            margin-left: 15px;
+            object-fit: contain;
+        }
+
+        .team-info {
+            flex: 1;
+        }
+
+        .match-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .live-badge {
+            background-color: red;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+
+        /* ألوان النوادي الجزائرية */
+        .CR-Belouizdad { background-color: #006633; color: white; }
+        .JS-Kabylie { background-color: #FF0000; color: white; }
+        .MC-Alger { background-color: #00A859; color: white; }
+        .USM-Alger { background-color: #1F4788; color: white; }
+        .ES-Setif { background-color: #000000; color: white; }
+        .NA-Hussein-Dey { background-color: #FFD700; color: #333; }
+        .JS-Saoura { background-color: #FFA500; color: white; }
+        .MC-Oran { background-color: #008000; color: white; }
+        .USM-Bel-Abbes { background-color: #000080; color: white; }
+
+        /* Fantasy League Styles */
+        .player-card {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .player-position {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .GK { background-color: #FF5733; }
+        .DF { background-color: #33A1FF; }
+        .MF { background-color: #33FF57; }
+        .FW { background-color: #FF33A1; }
+
+        .player-points {
+            margin-right: auto;
+            font-weight: bold;
+        }
+
+        .add-player-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* القائمة الجانبية */
+        .sidebar {
+            width: 250px;
+            position: fixed;
+            top: 0;
+            right: -250px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>الدوري الجزائري - Fantasy League</h1>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="openTab('home')">الرئيسية</button>
+        <button class="tab-btn" onclick="openTab('matches')">المباريات</button>
+        <button class="tab-btn" onclick="openTab('standings')">الترتيب</button>
+        <button class="tab-btn" onclick="openTab('fantasy')">Fantasy League</button>
+        <button class="tab-btn" onclick="openTab('news')">الأخبار</button>
+    </nav>
+
+    <!-- القائمة الجانبية لفريق Fantasy -->
+    <div class="overlay" id="overlay"></div>
+    <div class="sidebar" id="fantasy-sidebar">
+        <h2>فريقك Fantasy</h2>
+        <div id="my-team-players"></div>
+        <button onclick="closeSidebar()" style="margin-top: 20px; width: 100%;">إغلاق</button>
+    </div>
+
+    <!-- محتوى الصفحة -->
+    <div id="home" class="tab-content" style="display: block;">
+        <h2>أهلاً بك في تطبيق الدوري الجزائري</h2>
+        <p>تابع أحدث المباريات، النتائج، والإحصائيات للدوري الجزائري الممتاز.</p>
+        
+        <h3>المباريات القادمة</h3>
+        <div id="upcoming-matches"></div>
+        
+        <h3>أبرز اللاعبين</h3>
+        <div id="top-players"></div>
+    </div>
+
+    <div id="matches" class="tab-content">
+        <h2>جدول المباريات</h2>
+        <div id="matches-list"></div>
+    </div>
+
+    <div id="standings" class="tab-content">
+        <h2>ترتيب الفرق</h2>
+        <div id="standings-table"></div>
+    </div>
+
+    <div id="fantasy" class="tab-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Fantasy League</h2>
+            <button onclick="openSidebar()" class="add-player-btn">عرض فريقك</button>
+        </div>
+        
+        <h3>اختر لاعبيك</h3>
+        <div id="fantasy-players"></div>
+    </div>
+
+    <div id="news" class="tab-content">
+        <h2>آخر الأخبار</h2>
+        <div id="news-list"></div>
+    </div>
+
+    <script>
+        // بيانات التطبيق
+        const teams = [
+            { id: 1, name: "CR Belouizdad", shortName: "CRB", logo: "https://via.placeholder.com/50?text=CRB" },
+            { id: 2, name: "JS Kabylie", shortName: "JSK", logo: "https://via.placeholder.com/50?text=JSK" },
+            { id: 3, name: "MC Alger", shortName: "MCA", logo: "https://via.placeholder.com/50?text=MCA" },
+            { id: 4, name: "USM Alger", shortName: "USMA", logo: "https://via.placeholder.com/50?text=USMA" },
+            { id: 5, name: "ES Setif", shortName: "ESS", logo: "https://via.placeholder.com/50?text=ESS" },
+            { id: 6, name: "NA Hussein Dey", shortName: "NAHD", logo: "https://via.placeholder.com/50?text=NAHD" }
+        ];
+
+        const players = [
+            { id: 1, name: "محمد أمين عميروش", team: "CR Belouizdad", position: "FW", points: 45 },
+            { id: 2, name: "سفيان بن دودة", team: "JS Kabylie", position: "MF", points: 38 },
+            { id: 3, name: "عبد الكريم زبدي", team: "MC Alger", position: "DF", points: 32 },
+            { id: 4, name: "عيسى ماندسي", team: "USM Alger", position: "GK", points: 41 },
+            { id: 5, name: "حكيم حملة", team: "ES Setif", position: "FW", points: 39 },
+            { id: 6, name: "رضا بن عودة", team: "NA Hussein Dey", position: "MF", points: 36 }
+        ];
+
+        const matches = [
+            { id: 1, homeTeam: "CR Belouizdad", awayTeam: "JS Kabylie", date: "2023-05-15", time: "17:00", homeScore: null, awayScore: null, status: "قادمة" },
+            { id: 2, homeTeam: "MC Alger", awayTeam: "USM Alger", date: "2023-05-16", time: "18:00", homeScore: null, awayScore: null, status: "قادمة" },
+            { id: 3, homeTeam: "ES Setif", awayTeam: "NA Hussein Dey", date: "2023-05-10", time: "16:00", homeScore: 2, awayScore: 1, status: "منتهية" },
+            { id: 4, homeTeam: "JS Kabylie", awayTeam: "MC Alger", date: "2023-05-17", time: "17:30", homeScore: null, awayScore: null, status: "قادمة" }
+        ];
+
+        const news = [
+            { id: 1, title: "CRB يتصدر الدوري بعد الفوز على JSK", date: "2023-05-11", content: "فاز CR Belouizdad على JS Kabylie بهدفين دون رد في ديربي العاصمة." },
+            { id: 2, title: "إصابة عميروش تثير قلق مشجعي CRB", date: "2023-05-09", content: "أصيب محمد أمين عميروش في التدريبات وقد يغيب عن المباراة المقبلة." },
+            { id: 3, title: "USMA يعلن عن تعاقد جديد", date: "2023-05-08", content: "أعلن اتحاد العاصمة عن تعاقده مع لاعب خط وسط جديد من الدوري التونسي." }
+        ];
+
+        // فريق Fantasy الخاص بالمستخدم
+        let myFantasyTeam = [];
+
+        // تهيئة التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            renderUpcomingMatches();
+            renderTopPlayers();
+            renderAllMatches();
+            renderStandings();
+            renderFantasyPlayers();
+            renderNews();
+        });
+
+        // وظائف التبويب
+        function openTab(tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = 'none';
+            }
+
+            const tabButtons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).style.display = 'block';
+            event.currentTarget.classList.add('active');
+        }
+
+        // عرض المباريات القادمة
+        function renderUpcomingMatches() {
+            const container = document.getElementById('upcoming-matches');
+            container.innerHTML = '';
+            
+            const upcoming = matches.filter(match => match.status === 'قادمة').slice(0, 3);
+            
+            upcoming.forEach(match => {
+                const homeTeam = teams.find(t => t.name === match.homeTeam);
+                const awayTeam = teams.find(t => t.name === match.awayTeam);
+                
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match-card';
+                matchElement.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center;">
+                            <img src="${homeTeam.logo}" alt="${homeTeam.shortName}" class="team-logo">
+                            <span>${homeTeam.shortName}</span>
+                        </div>
+                        <div style="text-align: center;">
+                            <small>${match.date} - ${match.time}</small>
+                            <div>VS</div>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span>${awayTeam.shortName}</span>
+                            <img src="${awayTeam.logo}" alt="${awayTeam.shortName}" class="team-logo">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(matchElement);
+            });
+        }
+
+        // عرض أفضل اللاعبين
+        function renderTopPlayers() {
+            const container = document.getElementById('top-players');
+            container.innerHTML = '';
+            
+            const topPlayers = [...players].sort((a, b) => b.points - a.points).slice(0, 5);
+            
+            topPlayers.forEach(player => {
+                const team = teams.find(t => t.name === player.team);
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-card';
+                playerElement.innerHTML = `
+                    <div class="player-position ${player.position}">${player.position}</div>
+                    <div class="team-logo" style="background-image: url('${team.logo}'); background-size: cover;"></div>
+                    <div style="flex: 1;">
+                        <strong>${player.name}</strong>
+                        <div>${team.shortName}</div>
+                    </div>
+                    <div class="player-points">${player.points} pts</div>
+                `;
+                container.appendChild(playerElement);
+            });
+        }
+
+        // عرض جميع المباريات
+        function renderAllMatches() {
+            const container = document.getElementById('matches-list');
+            container.innerHTML = '';
+            
+            matches.forEach(match => {
+                const homeTeam = teams.find(t => t.name === match.homeTeam);
+                const awayTeam = teams.find(t => t.name === match.awayTeam);
+                
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match-card';
+                
+                let scoreHtml = '';
+                if (match.status === 'منتهية') {
+                    scoreHtml = `<div style="font-size: 1.2rem; font-weight: bold;">${match.homeScore} - ${match.awayScore}</div>`;
+                } else {
+                    scoreHtml = `<div>${match.time}</div>`;
+                }
+                
+                matchElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; flex: 1;">
+                            <img src="${homeTeam.logo}" alt="${homeTeam.shortName}" class="team-logo">
+                            <span>${homeTeam.shortName}</span>
+                        </div>
+                        
+                        <div style="text-align: center; flex: 1;">
+                            <small>${match.date}</small>
+                            ${scoreHtml}
+                            <small>${match.status}</small>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; justify-content: flex-end; flex: 1;">
+                            <span>${awayTeam.shortName}</span>
+                            <img src="${awayTeam.logo}" alt="${awayTeam.shortName}" class="team-logo">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(matchElement);
+            });
+        }
+
+        // عرض ترتيب الفرق
+        function renderStandings() {
+            const container = document.getElementById('standings-table');
+            container.innerHTML = `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: var(--primary-color); color: white;">
+                            <th style="padding: 10px; text-align: right;">الترتيب</th>
+                            <th style="padding: 10px; text-align: right;">الفريق</th>
+                            <th style="padding: 10px;">نقاط</th>
+                            <th style="padding: 10px;">ل</th>
+                            <th style="padding: 10px;">ت</th>
+                            <th style="padding: 10px;">ف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px; text-align: center;">1</td>
+                            <td style="padding: 10px; display: flex; align-items: center;">
+                                <img src="https://via.placeholder.com/30?text=CRB" style="margin-left: 10px;" width="30" height="30">
+                                CR Belouizdad
+                            </td>
+                            <td style="padding: 10px; text-align: center;">45</td>
+                            <td style="padding: 10px; text-align: center;">14</td>
+                            <td style="padding: 10px; text-align: center;">3</td>
+                            <td style="padding: 10px; text-align: center;">1</td>
+                        </tr>
+                        <tr style="background-color: #f9f9f9;">
+                            <td style="padding: 10px; text-align: center;">2</td>
+                            <td style="padding: 10px; display: flex; align-items: center;">
+                                <img src="https://via.placeholder.com/30?text=JSK" style="margin-left: 10px;" width="30" height="30">
+                                JS Kabylie
+                            </td>
+                            <td style="padding: 10px; text-align: center;">42</td>
+                            <td style="padding: 10px; text-align: center;">13</td>
+                            <td style="padding: 10px; text-align: center;">3</td>
+                            <td style="padding: 10px; text-align: center;">2</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; text-align: center;">3</td>
+                            <td style="padding: 10px; display: flex; align-items: center;">
+                                <img src="https://via.placeholder.com/30?text=MCA" style="margin-left: 10px;" width="30" height="30">
+                                MC Alger
+                            </td>
+                            <td style="padding: 10px; text-align: center;">40</td>
+                            <td style="padding: 10px; text-align: center;">12</td>
+                            <td style="padding: 10px; text-align: center;">4</td>
+                            <td style="padding: 10px; text-align: center;">2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // عرض لاعبين Fantasy
+        function renderFantasyPlayers() {
+            const container = document.getElementById('fantasy-players');
+            container.innerHTML = '';
+            
+            players.forEach(player => {
+                const team = teams.find(t => t.name === player.team);
+                const isInMyTeam = myFantasyTeam.includes(player.id);
+                
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-card';
+                playerElement.innerHTML = `
+                    <div class="player-position ${player.position}">${player.position}</div>
+                    <div class="team-logo" style="background-image: url('${team.logo}'); background-size: cover;"></div>
+                    <div style="flex: 1;">
+                        <strong>${player.name}</strong>
+                        <div>${team.shortName}</div>
+                    </div>
+                    <div class="player-points">${player.points} pts</div>
+                    <button class="add-player-btn" onclick="togglePlayer(${player.id})" ${isInMyTeam ? 'disabled' : ''}>
+                        ${isInMyTeam ? 'مضاف' : 'إضافة'}
+                    </button>
+                `;
+                container.appendChild(playerElement);
+            });
+        }
+
+        // إضافة/إزالة لاعب من فريق Fantasy
+        function togglePlayer(playerId) {
+            const index = myFantasyTeam.indexOf(playerId);
+            if (index === -1) {
+                if (myFantasyTeam.length >= 11) {
+                    alert('يمكنك إضافة 11 لاعب كحد أقصى!');
+                    return;
+                }
+                myFantasyTeam.push(playerId);
+            } else {
+                myFantasyTeam.splice(index, 1);
+            }
+            
+            renderFantasyPlayers();
+            renderMyFantasyTeam();
+        }
+
+        // عرض فريق Fantasy الخاص بالمستخدم
+        function renderMyFantasyTeam() {
+            const container = document.getElementById('my-team-players');
+            container.innerHTML = '';
+            
+            if (myFantasyTeam.length === 0) {
+                container.innerHTML = '<p>لم تقم بإضافة أي لاعبين بعد</p>';
+                return;
+            }
+            
+            myFantasyTeam.forEach(playerId => {
+                const player = players.find(p => p.id === playerId);
+                const team = teams.find(t => t.name === player.team);
+                
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-card';
+                playerElement.innerHTML = `
+                    <div class="player-position ${player.position}">${player.position}</div>
+                    <div class="team-logo" style="background-image: url('${team.logo}'); background-size: cover;"></div>
+                    <div style="flex: 1;">
+                        <strong>${player.name}</strong>
+                        <div>${team.shortName}</div>
+                    </div>
+                    <div class="player-points">${player.points} pts</div>
+                    <button onclick="togglePlayer(${player.id})" style="background-color: #ff3333; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                        إزالة
+                    </button>
+                `;
+                container.appendChild(playerElement);
+            });
+        }
+
+        // عرض الأخبار
+        function renderNews() {
+            const container = document.getElementById('news-list');
+            container.innerHTML = '';
+            
+            news.forEach(item => {
+                const newsElement = document.createElement('div');
+                newsElement.className = 'match-card';
+                newsElement.innerHTML = `
+                    <h3>${item.title}</h3>
+                    <small>${item.date}</small>
+                    <p>${item.content}</p>
+                `;
+                container.appendChild(newsElement);
+            });
+        }
+
+        // فتح القائمة الجانبية
+        function openSidebar() {
+            document.getElementById('fantasy-sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('active');
+            renderMyFantasyTeam();
+        }
+
+        // إغلاق القائمة الجانبية
+        function closeSidebar() {
+            document.getElementById('fantasy-sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        // إغلاق القائمة الجانبية عند النقر خارجها
+        document.getElementById('overlay').addEventListener('click', closeSidebar);
+    </script>
+</body>
+</html>
